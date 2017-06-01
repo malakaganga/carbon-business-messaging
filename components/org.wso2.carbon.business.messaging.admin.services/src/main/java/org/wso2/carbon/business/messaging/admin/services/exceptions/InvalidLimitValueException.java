@@ -14,28 +14,10 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.business.messaging.admin.services.types;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-import javax.xml.bind.annotation.XmlRootElement;
+package org.wso2.carbon.business.messaging.admin.services.exceptions;
 
 /**
- * * This class represent a message information object.
+ * The exception that is thrown when an invalid value is entered to a the limit query param.
  */
-@ApiModel(value = "Hello",
-          description = "The structure represents a hello message.")
-@XmlRootElement
-public class Hello {
-    @ApiModelProperty(value = "Welcoming party.")
-    private String welcome;
-
-    public String getWelcome() {
-        return welcome;
-    }
-
-    public void setWelcome(String welcome) {
-        this.welcome = welcome;
-    }
+public class InvalidLimitValueException extends Exception {
 }

@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.business.messaging.admin.services.internal;
 
-import org.wso2.carbon.business.messaging.core.Greeter;
+import org.wso2.andes.kernel.Andes;
 
 import java.util.logging.Logger;
 
@@ -28,10 +28,9 @@ import java.util.logging.Logger;
  * @since 4.0.0-SNAPSHOT
  */
 public class MBRESTServiceDataHolder {
-    Logger logger = Logger.getLogger(MBRESTServiceDataHolder.class.getName());
-
     private static MBRESTServiceDataHolder instance = new MBRESTServiceDataHolder();
-    private Greeter messagingCore;
+    Logger logger = Logger.getLogger(MBRESTServiceDataHolder.class.getName());
+    private Andes andesCore;
 
     private MBRESTServiceDataHolder() {
 
@@ -51,17 +50,17 @@ public class MBRESTServiceDataHolder {
      *
      * @return business-messaging-core Service
      */
-    public Greeter getMessagingCore() {
-        return messagingCore;
+    public Andes getAndesCore() {
+        return andesCore;
     }
 
     /**
      * This method is for setting the business-messaging-core service. This method is used by
      * ServiceComponent.
      *
-     * @param messagingCore The reference being passed through ServiceComponent
+     * @param andesCore The reference being passed through ServiceComponent
      */
-    public void setMessagingCore(Greeter messagingCore) {
-        this.messagingCore = messagingCore;
+    public void setAndesCore(Andes andesCore) {
+        this.andesCore = andesCore;
     }
 }

@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.business.messaging.admin.services.types;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-import javax.xml.bind.annotation.XmlRootElement;
+package org.wso2.carbon.business.messaging.admin.services.tests.unit;
 
 /**
- * * This class represent a message information object.
+ * Common constants use through out the testing in rest service.
  */
-@ApiModel(value = "Hello",
-          description = "The structure represents a hello message.")
-@XmlRootElement
-public class Hello {
-    @ApiModelProperty(value = "Welcoming party.")
-    private String welcome;
-
-    public String getWelcome() {
-        return welcome;
-    }
-
-    public void setWelcome(String welcome) {
-        this.welcome = welcome;
-    }
+public class Constants {
+    public static final String HOSTNAME = "localhost";
+    public static final int PORT = 7777;
+    public static final String VERSION = "v1.0.0";
+    public static final String ROOT_PATH = "/mb/" + VERSION;
+    public static final String BASE_URL = "http://" + HOSTNAME + ":" + PORT + ROOT_PATH;
 }

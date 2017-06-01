@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.business.messaging.admin.services.types;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-import javax.xml.bind.annotation.XmlRootElement;
+package org.wso2.carbon.business.messaging.admin.services.exceptions;
 
 /**
- * * This class represent a message information object.
+ * Exception class for the rest service when an server error occurs.
  */
-@ApiModel(value = "Hello",
-          description = "The structure represents a hello message.")
-@XmlRootElement
-public class Hello {
-    @ApiModelProperty(value = "Welcoming party.")
-    private String welcome;
+public class InternalServerException extends Exception {
+    private static final long serialVersionUID = 3803992383244407058L;
 
-    public String getWelcome() {
-        return welcome;
-    }
-
-    public void setWelcome(String welcome) {
-        this.welcome = welcome;
+    /**
+     * Creates an internal service exceptions with an exceptions. Exception would be server related error.
+     *
+     * @param cause The exceptions occurred in the server.
+     */
+    public InternalServerException(Throwable cause) {
+        super(cause);
     }
 }

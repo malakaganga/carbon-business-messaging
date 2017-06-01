@@ -17,26 +17,12 @@
 package org.wso2.carbon.business.messaging.admin.services.types;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
-import java.util.List;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * * This class represent a Protocols information object.
+ * Class for representing permissions for role to a specific destination.
  */
-@ApiModel(value = "Protocols",
-          description = "The structure represents protocols supported by the Message Broker.")
-@XmlRootElement
-public class Protocols {
-    @ApiModelProperty(value = "Protocols list.")
-    private List<String> protocol;
+@ApiModel(value = "Destination Role Permission",
+          description = "The structure for permissions assigned to a role " + "which can be linked to a destination.")
+public class DestinationRolePermission {
 
-    public List<String> getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(List<String> protocol) {
-        this.protocol = protocol;
-    }
 }
