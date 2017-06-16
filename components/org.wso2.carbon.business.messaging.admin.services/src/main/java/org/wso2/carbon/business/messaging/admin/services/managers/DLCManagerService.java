@@ -48,5 +48,8 @@ public interface DLCManagerService {
      * @param andesMetadataIDs The browser message Ids
      * @param dlcQueueName     The Dead Letter Queue Name for the tenant
      */
-    void deleteMessagesFromDeadLetterQueue(List<Long> andesMetadataIDs, String dlcQueueName);
+    void deleteMessagesFromDeadLetterQueue(long[] andesMetadataIDs, String dlcQueueName);
+    long getMessageCountInDLCForQueue(String queueName, String dlcQueueName);
+    long getMessagCountInDLC(String dlcQueueName);
+
 }

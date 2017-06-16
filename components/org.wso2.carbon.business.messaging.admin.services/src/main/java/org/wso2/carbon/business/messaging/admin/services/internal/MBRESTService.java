@@ -45,9 +45,11 @@ import org.wso2.carbon.business.messaging.admin.services.exceptions.InvalidLimit
 import org.wso2.carbon.business.messaging.admin.services.exceptions.InvalidOffsetValueException;
 import org.wso2.carbon.business.messaging.admin.services.exceptions.MessageManagerException;
 import org.wso2.carbon.business.messaging.admin.services.managers.BrokerManagerService;
+import org.wso2.carbon.business.messaging.admin.services.managers.DLCManagerService;
 import org.wso2.carbon.business.messaging.admin.services.managers.DestinationManagerService;
 import org.wso2.carbon.business.messaging.admin.services.managers.MessageManagerService;
 import org.wso2.carbon.business.messaging.admin.services.managers.impl.BrokerManagerServiceImpl;
+import org.wso2.carbon.business.messaging.admin.services.managers.impl.DLCManagerServiceImpl;
 import org.wso2.carbon.business.messaging.admin.services.managers.impl.DestinationManagerServiceImpl;
 import org.wso2.carbon.business.messaging.admin.services.managers.impl.MessageManagerServiceImpl;
 import org.wso2.carbon.business.messaging.admin.services.types.ClusterInformation;
@@ -55,6 +57,7 @@ import org.wso2.carbon.business.messaging.admin.services.types.Destination;
 import org.wso2.carbon.business.messaging.admin.services.types.DestinationNamesList;
 import org.wso2.carbon.business.messaging.admin.services.types.ErrorResponse;
 import org.wso2.carbon.business.messaging.admin.services.types.Hello;
+import org.wso2.carbon.business.messaging.admin.services.types.MessageIdList;
 import org.wso2.carbon.business.messaging.admin.services.types.NewDestination;
 import org.wso2.carbon.business.messaging.admin.services.types.Protocols;
 import org.wso2.msf4j.Microservice;
@@ -123,19 +126,24 @@ public class MBRESTService implements Microservice {
     private ServiceRegistration serviceRegistration;
 
     /**
-     * Service class for retrieving broker information
+     * Service class for retrieving broker information.
      */
     private BrokerManagerService brokerManagerService;
 
     /**
-     * Service class for retrieving messages related information
+     * Service class for retrieving messages related information.
      */
     private MessageManagerService messageManagerService;
 
     /**
-     * Service class for processing destination related requests
+     * Service class for processing destination related requests.
      */
     private DestinationManagerService destinationManagerService;
+
+    /**
+     * Service class for processing destination related requests.
+     */
+    private DLCManagerService dlcManagerService;
 
     public MBRESTService() {
 
@@ -548,8 +556,72 @@ public class MBRESTService implements Microservice {
         }
     }
 
+    @GET
+    @Path("/dlc/{dlc-queue-name}/messagecount")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Say hello to WSO2 MB",
+            notes = "Can be used to test the dlc manager service  broker service",
+            tags = "test broker service",
+            response = Hello.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,
+                    message = "hello response")
+    })
+    public Response getMessagCountInDLC(@PathParam("dlc-queue-name") String dlcQueueName) throws
+            InternalServerException {
+        long message = dlcManagerService.getMessagCountInDLC(dlcQueueName);
+        return Response.status(Response.Status.OK).entity(message).build();
+    }
+
+    @GET
+    @Path("/dlc/{dlc-queue-name}/queue-name/{queue-name}/messagecount")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Say hello to WSO2 MB",
+            notes = "Can be used to test the dlc manager service  broker service",
+            tags = "test broker service",
+            response = Hello.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,
+                    message = "hello response")
+    })
+    public Response getMessagCountInDLCForQueue(
+            @PathParam("queue-name") String queueName,
+            @PathParam("dlc-queue-name") String dlcQueueName)
+            throws InternalServerException {
+        long message = dlcManagerService.getMessageCountInDLCForQueue(queueName, dlcQueueName);
+        return Response.status(Response.Status.OK).entity(message).build();
+    }
+
+    @DELETE
+    @Path("/dlc/{dlc-queue-name}/messages")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Deletes/Purge message.",
+            notes = "Deletes/Purge message belonging to a specific destination.",
+            tags = "Messages")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Messages purged successfully."),
+            @ApiResponse(code = 404,
+                    message = "Invalid protocol, destination type or destination name, Message not found."),
+            @ApiResponse(code = 500, message = "Server Error.", response = ErrorResponse.class)})
+    public Response deleteMessagesFromDeadLetterQueue(
+            @ApiParam(value = "MessageIdList.") MessageIdList messageIdList,
+            @PathParam("dlc-queue-name") String dlcQueueName,
+            @Context org.wso2.msf4j.Request request) {
+
+        long[] andesMetadataIDs = messageIdList.getAndesMetadataIDs();
+        System.out.printf(" Hiiiiiiiiiiiiiiiiii %d%n", andesMetadataIDs[0]);
+        this.dlcManagerService.deleteMessagesFromDeadLetterQueue(andesMetadataIDs, dlcQueueName);
+        return Response.ok().build();
+
+    }
+
     /**
-     * Setter method for brokerManagerService instance
+     * Setter method for brokerManagerService instance.
      * @param brokerManagerService
      */
     public void setBrokerManagerService(BrokerManagerService brokerManagerService) {
@@ -603,6 +675,7 @@ public class MBRESTService implements Microservice {
         brokerManagerService = new BrokerManagerServiceImpl();
         destinationManagerService = new DestinationManagerServiceImpl();
         messageManagerService = new MessageManagerServiceImpl();
+        dlcManagerService = new DLCManagerServiceImpl();
     }
 
     /**

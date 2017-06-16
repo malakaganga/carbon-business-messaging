@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) 2017, WSO2 Inc. (http://wso2.com) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,27 @@ public class DLCManagerServiceBeanImpl implements DLCManagerService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteMessagesFromDeadLetterQueue(List<Long> andesMetadataIDs, String dlcQueueName) {
+    public void deleteMessagesFromDeadLetterQueue(long[] andesMetadataIDs, String dlcQueueName) {
 
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getMessageCountInDLCForQueue(String queueName, String dlcQueueName) {
+        return 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getMessagCountInDLC(String dlcQueueName) {
+        return 0;
+    }
+
+
+
+
 }
