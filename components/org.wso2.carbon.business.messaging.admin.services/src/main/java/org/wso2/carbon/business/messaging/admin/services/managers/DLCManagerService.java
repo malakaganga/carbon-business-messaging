@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.business.messaging.admin.services.managers;
 
+import org.wso2.andes.kernel.AndesMessageMetadata;
+
 import java.util.List;
 
 /**
@@ -51,5 +53,11 @@ public interface DLCManagerService {
     void deleteMessagesFromDeadLetterQueue(long[] andesMetadataIDs, String dlcQueueName);
     long getMessageCountInDLCForQueue(String queueName, String dlcQueueName);
     long getMessagCountInDLC(String dlcQueueName);
+    List<AndesMessageMetadata> getMessageMetadataInDLCForQueue(final String queueName,
+                                                                    final String dlcQueueName, long firstMsgId, int
+                                                                            count);
+
+    int rerouteAllMessagesInDeadLetterChannelForQueue(String dlcQueueName, String sourceQueue, String targetQueue,
+                                                      int internalBatchSize, boolean restoreToOriginalQueue);
 
 }

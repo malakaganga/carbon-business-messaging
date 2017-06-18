@@ -37,6 +37,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.andes.kernel.Andes;
+import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.carbon.business.messaging.admin.services.exceptions.BrokerManagerException;
 import org.wso2.carbon.business.messaging.admin.services.exceptions.DestinationManagerException;
 import org.wso2.carbon.business.messaging.admin.services.exceptions.DestinationNotFoundException;
@@ -596,6 +597,32 @@ public class MBRESTService implements Microservice {
         return Response.status(Response.Status.OK).entity(message).build();
     }
 
+    @GET
+    @Path("/dlc/{dlc-queue-name}/queue-name/{queue-name}/messages")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Say hello to WSO2 MB",
+            notes = "Can be used to test the dlc manager service  broker service",
+            tags = "test broker service",
+            response = Hello.class,
+            responseContainer = "List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,
+                    message = "hello response")
+    })
+    public Response getMessagesInDLCForQueue(
+            @PathParam("queue-name") String queueName,
+            @PathParam("dlc-queue-name") String dlcQueueName,
+            @QueryParam("startingId") long firstMessageId,
+            @QueryParam("limit") int count)
+            throws InternalServerException {
+        List<AndesMessageMetadata> andesMessageMetadataList = dlcManagerService.getMessageMetadataInDLCForQueue
+                (queueName, dlcQueueName, firstMessageId, count);
+        //AndesMessageMetadata andesMessageMetadata = andesMessageMetadataList.get(0);
+        return Response.status(Response.Status.OK).entity(andesMessageMetadataList).build();
+
+    }
+
     @DELETE
     @Path("/dlc/{dlc-queue-name}/messages")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -614,9 +641,38 @@ public class MBRESTService implements Microservice {
             @Context org.wso2.msf4j.Request request) {
 
         long[] andesMetadataIDs = messageIdList.getAndesMetadataIDs();
-        System.out.printf(" Hiiiiiiiiiiiiiiiiii %d%n", andesMetadataIDs[0]);
         this.dlcManagerService.deleteMessagesFromDeadLetterQueue(andesMetadataIDs, dlcQueueName);
         return Response.ok().build();
+
+    }
+
+    @POST
+    @Path("/dlc/{dlc-queue-name}/queue-name/{queue-name}/rerouteall")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Creates a destination.",
+            notes = "Creates a destination that belongs to a specific protocol and destination type.",
+            tags = "Destinations")
+    @ApiResponses(value = {
+            @ApiResponse(code = 202, message = "Destination creation event has been triggered."),
+            @ApiResponse(code = 500, message = "Server error on creating destination", response = ErrorResponse.class)})
+    public Response createDestination(
+            @ApiParam(value = "Protocol for the destination.")
+            @PathParam("dlc-queue-name") String dlcQueueName,
+            @ApiParam(value = "Destination type for the destination. \"durable_topic\" is considered as a topic.")
+            @PathParam("queue-name") String sourceQueueName,
+            @ApiParam(value = "Destination type for the destination. \"durable_topic\" is considered as a topic.")
+            @QueryParam("destination") String targetQueueName) throws InternalServerException {
+
+
+        System.out.println(" "+sourceQueueName+" "+targetQueueName+" "+dlcQueueName);
+        boolean restoreToOriginalQueue = sourceQueueName.equals(targetQueueName);
+        int numberOfreroutedMessages = this.dlcManagerService.rerouteAllMessagesInDeadLetterChannelForQueue
+                (dlcQueueName, sourceQueueName, targetQueueName, 10, restoreToOriginalQueue);
+
+        return Response.status(Response.Status.OK).entity(numberOfreroutedMessages).build();
+
 
     }
 
