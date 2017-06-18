@@ -35,6 +35,12 @@ public class DLCManagerServiceBeanImpl implements DLCManagerService {
     }
 
     @Override
+    public int moveMessagesFromDLCToNewDestination(List<Long> messageIds, String sourceQueue, String targetQueue,
+                                                   boolean restoreToOriginalQueue) {
+        return 0;
+    }
+
+    @Override
     public List<AndesMessageMetadata> getMessageMetadataInDLCForQueue(String queueName, String dlcQueueName, long
             firstMsgId, int count) {
         return null;

@@ -46,6 +46,17 @@ public class DLCManagerServiceImpl implements DLCManagerService {
     }
 
     @Override
+    public int moveMessagesFromDLCToNewDestination(List<Long> messageIds, String sourceQueue, String targetQueue,
+                                                   boolean restoreToOriginalQueue) {
+        try {
+            return andesCore.moveMessagesFromDLCToNewDestination(messageIds, sourceQueue, targetQueue, restoreToOriginalQueue);
+        } catch (AndesException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
     public List<AndesMessageMetadata> getMessageMetadataInDLCForQueue(String queueName, String dlcQueueName, long
             firstMsgId, int count) {
         try {

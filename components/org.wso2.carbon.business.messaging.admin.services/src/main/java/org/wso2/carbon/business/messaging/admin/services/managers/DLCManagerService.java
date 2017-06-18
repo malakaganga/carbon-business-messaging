@@ -60,4 +60,7 @@ public interface DLCManagerService {
     int rerouteAllMessagesInDeadLetterChannelForQueue(String dlcQueueName, String sourceQueue, String targetQueue,
                                                       int internalBatchSize, boolean restoreToOriginalQueue);
 
+    int moveMessagesFromDLCToNewDestination(List<Long> messageIds, String sourceQueue, String targetQueue, boolean
+            restoreToOriginalQueue);
+
 }

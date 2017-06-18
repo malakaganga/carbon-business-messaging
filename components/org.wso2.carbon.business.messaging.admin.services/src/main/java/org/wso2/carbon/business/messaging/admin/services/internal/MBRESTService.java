@@ -63,6 +63,8 @@ import org.wso2.carbon.business.messaging.admin.services.types.NewDestination;
 import org.wso2.carbon.business.messaging.admin.services.types.Protocols;
 import org.wso2.msf4j.Microservice;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -657,7 +659,7 @@ public class MBRESTService implements Microservice {
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "Destination creation event has been triggered."),
             @ApiResponse(code = 500, message = "Server error on creating destination", response = ErrorResponse.class)})
-    public Response createDestination(
+    public Response rerouteAllMessagesInDeadLetterChannelForQueue(
             @ApiParam(value = "Protocol for the destination.")
             @PathParam("dlc-queue-name") String dlcQueueName,
             @ApiParam(value = "Destination type for the destination. \"durable_topic\" is considered as a topic.")
@@ -670,6 +672,44 @@ public class MBRESTService implements Microservice {
         boolean restoreToOriginalQueue = sourceQueueName.equals(targetQueueName);
         int numberOfreroutedMessages = this.dlcManagerService.rerouteAllMessagesInDeadLetterChannelForQueue
                 (dlcQueueName, sourceQueueName, targetQueueName, 10, restoreToOriginalQueue);
+
+        return Response.status(Response.Status.OK).entity(numberOfreroutedMessages).build();
+
+
+    }
+
+    @POST
+    @Path("/dlc/{dlc-queue-name}/queue-name/{queue-name}/reroute")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Creates a destination.",
+            notes = "Creates a destination that belongs to a specific protocol and destination type.",
+            tags = "Destinations")
+    @ApiResponses(value = {
+            @ApiResponse(code = 202, message = "Destination creation event has been triggered."),
+            @ApiResponse(code = 500, message = "Server error on creating destination", response = ErrorResponse.class)})
+    public Response rerouteSelectedMessagesInDeadLetterChannelForQueue(
+            @ApiParam(value = "Protocol for the destination.")
+            @PathParam("dlc-queue-name") String dlcQueueName,
+            @ApiParam(value = "Destination type for the destination. \"durable_topic\" is considered as a topic.")
+            @PathParam("queue-name") String sourceQueueName,
+            @ApiParam(value = "Destination type for the destination. \"durable_topic\" is considered as a topic.")
+            @QueryParam("destination") String targetQueueName,
+            @ApiParam(value = "MessageIdList.") MessageIdList messageIdList,
+            @Context org.wso2.msf4j.Request request) throws InternalServerException {
+
+
+        System.out.println(" "+sourceQueueName+" "+targetQueueName+" "+dlcQueueName);
+        long[] andesMetadataIDs = messageIdList.getAndesMetadataIDs();
+        List<Long> messageIdCollection = new ArrayList();
+        for (Long messageId : andesMetadataIDs) {
+            messageIdCollection.add(messageId);
+        }
+        boolean restoreToOriginalQueue = sourceQueueName.equals(targetQueueName);
+        int numberOfreroutedMessages = this.dlcManagerService.moveMessagesFromDLCToNewDestination(messageIdCollection,
+                sourceQueueName,
+                targetQueueName, restoreToOriginalQueue);
 
         return Response.status(Response.Status.OK).entity(numberOfreroutedMessages).build();
 
