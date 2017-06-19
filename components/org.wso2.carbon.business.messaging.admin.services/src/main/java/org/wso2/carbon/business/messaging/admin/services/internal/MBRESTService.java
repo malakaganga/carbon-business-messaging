@@ -37,6 +37,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.andes.kernel.Andes;
+import org.wso2.andes.kernel.AndesMessage;
 import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.carbon.business.messaging.admin.services.exceptions.BrokerManagerException;
 import org.wso2.carbon.business.messaging.admin.services.exceptions.DestinationManagerException;
@@ -64,7 +65,6 @@ import org.wso2.carbon.business.messaging.admin.services.types.Protocols;
 import org.wso2.msf4j.Microservice;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -616,12 +616,20 @@ public class MBRESTService implements Microservice {
             @PathParam("queue-name") String queueName,
             @PathParam("dlc-queue-name") String dlcQueueName,
             @QueryParam("startingId") long firstMessageId,
-            @QueryParam("limit") int count)
+            @QueryParam("limit") int count,
+            @QueryParam("content") boolean isContent)
             throws InternalServerException {
-        List<AndesMessageMetadata> andesMessageMetadataList = dlcManagerService.getMessageMetadataInDLCForQueue
-                (queueName, dlcQueueName, firstMessageId, count);
-        //AndesMessageMetadata andesMessageMetadata = andesMessageMetadataList.get(0);
-        return Response.status(Response.Status.OK).entity(andesMessageMetadataList).build();
+
+        if (isContent) {
+            List<AndesMessage> andesMessageList = dlcManagerService.getNextNMessageContentInDLCForQueue
+                    (queueName, dlcQueueName, firstMessageId, count);
+            return Response.status(Response.Status.OK).entity(andesMessageList).build();
+
+        } else {
+            List<AndesMessageMetadata> andesMessageMetadataList = dlcManagerService.getMessageMetadataInDLCForQueue
+                    (queueName, dlcQueueName, firstMessageId, count);
+            return Response.status(Response.Status.OK).entity(andesMessageMetadataList).build();
+        }
 
     }
 
@@ -667,8 +675,6 @@ public class MBRESTService implements Microservice {
             @ApiParam(value = "Destination type for the destination. \"durable_topic\" is considered as a topic.")
             @QueryParam("destination") String targetQueueName) throws InternalServerException {
 
-
-        System.out.println(" "+sourceQueueName+" "+targetQueueName+" "+dlcQueueName);
         boolean restoreToOriginalQueue = sourceQueueName.equals(targetQueueName);
         int numberOfreroutedMessages = this.dlcManagerService.rerouteAllMessagesInDeadLetterChannelForQueue
                 (dlcQueueName, sourceQueueName, targetQueueName, 10, restoreToOriginalQueue);
@@ -699,17 +705,14 @@ public class MBRESTService implements Microservice {
             @ApiParam(value = "MessageIdList.") MessageIdList messageIdList,
             @Context org.wso2.msf4j.Request request) throws InternalServerException {
 
-
-        System.out.println(" "+sourceQueueName+" "+targetQueueName+" "+dlcQueueName);
         long[] andesMetadataIDs = messageIdList.getAndesMetadataIDs();
         List<Long> messageIdCollection = new ArrayList();
         for (Long messageId : andesMetadataIDs) {
             messageIdCollection.add(messageId);
         }
         boolean restoreToOriginalQueue = sourceQueueName.equals(targetQueueName);
-        int numberOfreroutedMessages = this.dlcManagerService.moveMessagesFromDLCToNewDestination(messageIdCollection,
-                sourceQueueName,
-                targetQueueName, restoreToOriginalQueue);
+        int numberOfreroutedMessages = this.dlcManagerService.moveMessagesFromDLCToNewDestination
+                (messageIdCollection, sourceQueueName, targetQueueName, restoreToOriginalQueue);
 
         return Response.status(Response.Status.OK).entity(numberOfreroutedMessages).build();
 

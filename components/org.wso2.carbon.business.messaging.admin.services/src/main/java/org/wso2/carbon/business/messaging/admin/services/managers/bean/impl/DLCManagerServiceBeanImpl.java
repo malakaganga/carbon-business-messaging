@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.business.messaging.admin.services.managers.bean.impl;
 
+import org.wso2.andes.kernel.AndesMessage;
 import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.carbon.business.messaging.admin.services.managers.DLCManagerService;
 
@@ -83,5 +84,11 @@ public class DLCManagerServiceBeanImpl implements DLCManagerService {
     public int rerouteAllMessagesInDeadLetterChannelForQueue(String dlcQueueName, String sourceQueue, String
             targetQueue, int internalBatchSize, boolean restoreToOriginalQueue) {
         return 0;
+    }
+
+    @Override
+    public List<AndesMessage> getNextNMessageContentInDLCForQueue(String queueName, String dlcQueueName, long
+            firstMsgId, int count) {
+        return null;
     }
 }

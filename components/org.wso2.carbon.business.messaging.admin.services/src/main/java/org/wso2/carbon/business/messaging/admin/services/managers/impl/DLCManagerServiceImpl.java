@@ -2,6 +2,7 @@ package org.wso2.carbon.business.messaging.admin.services.managers.impl;
 
 import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesException;
+import org.wso2.andes.kernel.AndesMessage;
 import org.wso2.andes.kernel.AndesMessageMetadata;
 import org.wso2.carbon.business.messaging.admin.services.internal.MBRESTServiceDataHolder;
 import org.wso2.carbon.business.messaging.admin.services.managers.DLCManagerService;
@@ -40,7 +41,7 @@ public class DLCManagerServiceImpl implements DLCManagerService {
             return andesCore.rerouteAllMessagesInDeadLetterChannelForQueue(dlcQueueName, sourceQueue, targetQueue,
                     internalBatchSize, restoreToOriginalQueue);
         } catch (AndesException e) {
-            e.printStackTrace();
+
         }
         return 0;
     }
@@ -51,7 +52,7 @@ public class DLCManagerServiceImpl implements DLCManagerService {
         try {
             return andesCore.moveMessagesFromDLCToNewDestination(messageIds, sourceQueue, targetQueue, restoreToOriginalQueue);
         } catch (AndesException e) {
-            e.printStackTrace();
+
         }
         return 0;
     }
@@ -61,6 +62,17 @@ public class DLCManagerServiceImpl implements DLCManagerService {
             firstMsgId, int count) {
         try {
             return andesCore.getNextNMessageMetadataInDLCForQueue(queueName, dlcQueueName, firstMsgId, count);
+        } catch (AndesException e) {
+
+        }
+        return null;
+    }
+
+    @Override
+    public List<AndesMessage> getNextNMessageContentInDLCForQueue(String queueName, String dlcQueueName, long
+            firstMsgId, int count) {
+        try {
+            return andesCore.getNextNMessageContentInDLCForQueue(queueName, dlcQueueName, firstMsgId, count);
         } catch (AndesException e) {
 
         }
