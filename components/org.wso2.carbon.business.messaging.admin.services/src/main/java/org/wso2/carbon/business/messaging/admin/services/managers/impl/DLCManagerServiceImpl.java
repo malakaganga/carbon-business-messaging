@@ -4,6 +4,7 @@ import org.wso2.andes.kernel.Andes;
 import org.wso2.andes.kernel.AndesException;
 import org.wso2.andes.kernel.AndesMessage;
 import org.wso2.andes.kernel.AndesMessageMetadata;
+import org.wso2.carbon.business.messaging.admin.services.exceptions.InternalServerException;
 import org.wso2.carbon.business.messaging.admin.services.internal.MBRESTServiceDataHolder;
 import org.wso2.carbon.business.messaging.admin.services.managers.DLCManagerService;
 
@@ -23,83 +24,89 @@ public class DLCManagerServiceImpl implements DLCManagerService {
         andesCore = MBRESTServiceDataHolder.getInstance().getAndesCore();
     }
 
-    @Override
-    public void restoreMessagesFromDeadLetterQueue(List<Long> andesMetadataIDs, String dlcQueueName) {
-
-    }
-
-    @Override
-    public void restoreMessagesFromDeadLetterQueue(List<Long> andesMetadataIDs, String newDestinationQueueName,
-                                                   String dlcQueueName) {
-
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int rerouteAllMessagesInDeadLetterChannelForQueue(String dlcQueueName, String sourceQueue, String
-            targetQueue, int internalBatchSize, boolean restoreToOriginalQueue) {
+            targetQueue, int internalBatchSize, boolean restoreToOriginalQueue) throws InternalServerException {
         try {
             return andesCore.rerouteAllMessagesInDeadLetterChannelForQueue(dlcQueueName, sourceQueue, targetQueue,
                     internalBatchSize, restoreToOriginalQueue);
         } catch (AndesException e) {
-
+            throw new InternalServerException("Error while moving messages from dlc to queue", e);
         }
-        return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int moveMessagesFromDLCToNewDestination(List<Long> messageIds, String sourceQueue, String targetQueue,
-                                                   boolean restoreToOriginalQueue) {
+                                                   boolean restoreToOriginalQueue) throws InternalServerException {
         try {
-            return andesCore.moveMessagesFromDLCToNewDestination(messageIds, sourceQueue, targetQueue, restoreToOriginalQueue);
+            return andesCore.moveMessagesFromDLCToNewDestination(messageIds, sourceQueue, targetQueue,
+                    restoreToOriginalQueue);
         } catch (AndesException e) {
-
+            throw new InternalServerException("Error while moving messages from dlc to queue", e);
         }
-        return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AndesMessageMetadata> getMessageMetadataInDLCForQueue(String queueName, String dlcQueueName, long
-            firstMsgId, int count) {
+            firstMsgId, int count) throws InternalServerException {
         try {
             return andesCore.getNextNMessageMetadataInDLCForQueue(queueName, dlcQueueName, firstMsgId, count);
         } catch (AndesException e) {
-
+            throw new InternalServerException("Error while getting message metadata from dlc", e);
         }
-        return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AndesMessage> getNextNMessageContentInDLCForQueue(String queueName, String dlcQueueName, long
-            firstMsgId, int count) {
+            firstMsgId, int count) throws InternalServerException {
         try {
             return andesCore.getNextNMessageContentInDLCForQueue(queueName, dlcQueueName, firstMsgId, count);
         } catch (AndesException e) {
-
+            throw new InternalServerException("Error while getting message content from dlc", e);
         }
-        return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteMessagesFromDeadLetterQueue(long[] andesMetadataIDs, String dlcQueueName) {
         andesCore.deleteMessagesFromDeadLetterQueue(andesMetadataIDs, dlcQueueName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public long getMessageCountInDLCForQueue(String queueName, String dlcQueueName) {
+    public long getMessageCountInDLCForQueue(String queueName, String dlcQueueName) throws InternalServerException {
         try {
             return andesCore.getMessageCountInDLCForQueue(queueName, dlcQueueName);
         } catch (AndesException e) {
+            throw new InternalServerException("Error while getting message count in dlc for queue", e);
         }
-        return 10;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public long getMessagCountInDLC(String dlcQueueName) {
+    public long getMessagCountInDLC(String dlcQueueName) throws InternalServerException {
         try {
             return andesCore.getMessageCountInDLC(dlcQueueName);
         } catch (AndesException e) {
-
+            throw new InternalServerException("Error while getting message count in dlc", e);
         }
-        return 10;
     }
 }

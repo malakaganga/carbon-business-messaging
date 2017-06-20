@@ -66,15 +66,7 @@ import org.wso2.msf4j.Microservice;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -371,7 +363,8 @@ public class MBRESTService implements Microservice {
                 destinationManagerService.deleteDestination(protocol, destinationType, destinationName);
             return Response.status(Response.Status.NO_CONTENT).build();
             } else {
-                throw new DestinationNotFoundException("Destination '" + destinationName + "' not found.");
+                throw new NotFoundException("");
+              // throw new DestinationNotFoundException("Destination '" + destinationName + "' not found.");
             }
         } catch (DestinationManagerException e) {
             throw new InternalServerException(e);
@@ -680,8 +673,6 @@ public class MBRESTService implements Microservice {
                 (dlcQueueName, sourceQueueName, targetQueueName, 10, restoreToOriginalQueue);
 
         return Response.status(Response.Status.OK).entity(numberOfreroutedMessages).build();
-
-
     }
 
     @POST

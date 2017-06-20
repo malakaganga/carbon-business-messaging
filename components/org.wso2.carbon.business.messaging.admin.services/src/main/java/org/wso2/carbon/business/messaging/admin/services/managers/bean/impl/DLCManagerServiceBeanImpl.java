@@ -27,33 +27,23 @@ import java.util.List;
  */
 public class DLCManagerServiceBeanImpl implements DLCManagerService {
 
+
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void restoreMessagesFromDeadLetterQueue(List<Long> andesMetadataIDs, String dlcQueueName) {
-
-    }
-
     @Override
     public int moveMessagesFromDLCToNewDestination(List<Long> messageIds, String sourceQueue, String targetQueue,
                                                    boolean restoreToOriginalQueue) {
-        return 0;
-    }
-
-    @Override
-    public List<AndesMessageMetadata> getMessageMetadataInDLCForQueue(String queueName, String dlcQueueName, long
-            firstMsgId, int count) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void restoreMessagesFromDeadLetterQueue(List<Long> andesMetadataIDs, String newDestinationQueueName,
-            String dlcQueueName) {
-
+    public List<AndesMessageMetadata> getMessageMetadataInDLCForQueue(String queueName, String dlcQueueName, long
+            firstMsgId, int count) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -61,7 +51,7 @@ public class DLCManagerServiceBeanImpl implements DLCManagerService {
      */
     @Override
     public void deleteMessagesFromDeadLetterQueue(long[] andesMetadataIDs, String dlcQueueName) {
-
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -69,7 +59,7 @@ public class DLCManagerServiceBeanImpl implements DLCManagerService {
      */
     @Override
     public long getMessageCountInDLCForQueue(String queueName, String dlcQueueName) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -77,18 +67,25 @@ public class DLCManagerServiceBeanImpl implements DLCManagerService {
      */
     @Override
     public long getMessagCountInDLC(String dlcQueueName) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int rerouteAllMessagesInDeadLetterChannelForQueue(String dlcQueueName, String sourceQueue, String
             targetQueue, int internalBatchSize, boolean restoreToOriginalQueue) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AndesMessage> getNextNMessageContentInDLCForQueue(String queueName, String dlcQueueName, long
             firstMsgId, int count) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }
